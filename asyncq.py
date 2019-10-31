@@ -6,10 +6,22 @@ import time
 
 
 async def makeitem(size: int = 5) -> str:
+    """
+    Creates a random hexidecimal value equivalent to the input numbers of base10
+    :param size: The number of base-10 characters to use as an input
+    :return: The hex string
+    """
     return os.urandom(size).hex()
 
 
 async def randsleep(a: int = 1, b: int = 5, caller=None) -> None:
+    """
+
+    :param a:
+    :param b:
+    :param caller:
+    :return:
+    """
     i = random.randint(0, 10)
     if caller:
         print(f"{caller} sleeping for {i} seconds.")
