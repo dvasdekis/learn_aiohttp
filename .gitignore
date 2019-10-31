@@ -1,0 +1,4 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Env files except for .env.empty template
+.env
+!.env.empty
