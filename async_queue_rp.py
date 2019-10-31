@@ -4,6 +4,9 @@ import os
 import random
 import time
 
+# From https://realpython.com/async-io-python/#async-io-design-patterns
+# This module is a demonstration of how coroutines can be chained with Async IO
+
 
 async def makeitem(size: int = 5) -> str:
     """
@@ -16,7 +19,7 @@ async def makeitem(size: int = 5) -> str:
 
 async def randsleep(a: int = 1, b: int = 5, caller=None) -> None:
     """
-
+    Sleeps for a random length of time between 1 and 10 seconds
     :param a:
     :param b:
     :param caller:
@@ -29,6 +32,12 @@ async def randsleep(a: int = 1, b: int = 5, caller=None) -> None:
 
 
 async def produce(name: int, q: asyncio.Queue) -> None:
+    """
+
+    :param name:
+    :param q:
+    :return: Produces nothing??
+    """
     n = random.randint(0, 10)
     for _ in it.repeat(None, n):  # Synchronous loop for each single producer
         await randsleep(caller=f"Producer {name}")
