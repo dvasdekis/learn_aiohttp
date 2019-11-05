@@ -22,7 +22,8 @@ async def publish(queue):
         )
         """
         msg = "Hello"
-        asyncio.create_task(queue.put(msg))  # Schedules the coroutine on the loop without blocking
+        #await asyncio.create_task(queue.put(msg))  # Schedules the coroutine on the loop without blocking
+        await asyncio.sleep(0.01)
         LOG.info(f"Published {msg}")
 
 

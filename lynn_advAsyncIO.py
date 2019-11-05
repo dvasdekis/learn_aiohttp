@@ -2,7 +2,6 @@ import asyncio
 import logging
 import random
 import string
-import queue
 import uuid
 import time
 # from https://www.youtube.com/watch?v=bckD_GK80oY
@@ -11,7 +10,6 @@ LOG = logging.getLogger('')
 
 
 async def publish(queue):
-    LOG.info("Started publishing")  # I don't see this!
     while True:
         """ # The below didn't work. Trying more basic stuff
         choices = string.ascii_lowercase + string.digits
@@ -21,7 +19,13 @@ async def publish(queue):
             inst_name=f"cattle-{host_id}"
         )
         """
-        msg = "Hello"
+        choices = string.ascii_lowercase + string.digits
+        host_id = "".join(random.choices(choices, k=4))
+        msg = Message(
+            msg_id=str(uuid.uuid4()),
+            inst_name=f"cattle-{host_id}"
+        )
+        LOG.info("Started publishing")  # I don't see this!
         asyncio.create_task(queue.put(msg))  # Schedules the coroutine on the loop without blocking
         LOG.info(f"Published {msg}")
 
@@ -54,12 +58,19 @@ async def consume(queue):
         asyncio.create_task(handle_message(msg))  # Simulates a random IO operation
 
 
-async def main() -> None:
-    q = queue.Queue()
+def main() -> None:
+    queue = asyncio.Queue()
+    loop = asyncio.get_event_loop()
     LOG.info("Created queue")
-    while True:
-        asyncio.create_task(publish(q))
-        asyncio.create_task(consume(q))
+    try:
+        loop.create_task(publish(queue))
+        loop.create_task(consume(queue))
+        loop.run_forever()
+    except KeyboardInterrupt:
+        LOG.info("Process interrupted")
+    finally:
+        logging.info("Cleaning up")
+        loop.close()
 
 
 if __name__ == "__main__":
