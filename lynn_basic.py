@@ -58,8 +58,7 @@ async def main() -> None:
     q = queue.Queue()
     LOG.info("Created queue")
     while True:
-        asyncio.create_task(publish(q))
-        asyncio.create_task(consume(q))
+        await asyncio.gather(publish(q), consume(q))
 
 
 if __name__ == "__main__":
