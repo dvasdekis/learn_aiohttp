@@ -7,6 +7,7 @@ import time
 # from https://www.youtube.com/watch?v=bckD_GK80oY
 logging.basicConfig(level="INFO")
 LOG = logging.getLogger("asyncio")
+
 """ 
 Learnings:
 - Queues will increase in size rapidly if your producer is faster than your consumer. 
