@@ -7,26 +7,23 @@ import time
 # from https://www.youtube.com/watch?v=bckD_GK80oY
 logging.basicConfig(level="INFO")
 LOG = logging.getLogger('')
+""" 
+Learnings:
+- Queues will increase in size rapidly if your producer is faster than your consumer. 
+    Use a Max queue size parameter when you instantiate your queue to deal with this nicely. (Queue.put() is aware) 
+"""
 
 
 async def publish(queue):
     while True:
-        """ # The below didn't work. Trying more basic stuff
         choices = string.ascii_lowercase + string.digits
         host_id = "".join(random.choices(choices, k=4))
-        msg = Message(
-            msg_id=str(uuid.uuid4()),
-            inst_name=f"cattle-{host_id}"
-        )
-        """
-        choices = string.ascii_lowercase + string.digits
-        host_id = "".join(random.choices(choices, k=4))
-        msg = Message(
-            msg_id=str(uuid.uuid4()),
-            inst_name=f"cattle-{host_id}"
-        )
-        LOG.info("Started publishing")  # I don't see this!
-        asyncio.create_task(queue.put(msg))  # Schedules the coroutine on the loop without blocking
+        msg = f"""Message(
+            msg_id={str(uuid.uuid4())},
+            inst_name="cattle-{host_id}"
+        )"""
+        LOG.info("Started publishing")
+        await asyncio.create_task(queue.put(msg))  # Schedules the coroutine on the loop without blocking
         LOG.info(f"Published {msg}")
 
 
@@ -34,17 +31,15 @@ async def handle_message(msg):
     async def restart_host(msg):
         # simulating IO work
         await asyncio.sleep(random.random())
-        msg.restarted = True
-        LOG.info(f"Restarted {msg.hostname}")
+        LOG.info(f"Restarted {msg}")
 
     async def save(msg):
         # simulating IO work
         await asyncio.sleep(random.random())
-        msg.saved = True
         LOG.info(f"Saved {msg} into dattabase")
 
     async def cleanup(msg):
-        msg.acked = True
+        await asyncio.sleep(random.random())
         LOG.info(f"Done. Acked {msg}")
 
     await asyncio.gather(save(msg), restart_host(msg))
@@ -55,22 +50,18 @@ async def consume(queue):
     while True:
         msg = await queue.get()
         LOG.info(f"Consumed {msg}")
-        asyncio.create_task(handle_message(msg))  # Simulates a random IO operation
+        await asyncio.create_task(handle_message(msg))  # Simulates a random IO operation
 
 
-def main() -> None:
-    queue = asyncio.Queue()
-    loop = asyncio.get_event_loop()
+async def main() -> None:
+    queue = asyncio.Queue(maxsize=10)
     LOG.info("Created queue")
     try:
-        loop.create_task(publish(queue))
-        loop.create_task(consume(queue))
-        loop.run_forever()
+        await asyncio.gather(publish(queue), consume(queue))
     except KeyboardInterrupt:
         LOG.info("Process interrupted")
     finally:
         logging.info("Cleaning up")
-        loop.close()
 
 
 if __name__ == "__main__":
