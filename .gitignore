@@ -2,3 +2,4 @@
 ### Env files except for .env.empty template
 .env
 !.env.empty
+venv
