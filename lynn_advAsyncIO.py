@@ -68,7 +68,7 @@ async def main() -> None:
 if __name__ == "__main__":
     LOG.info("Started main loop")
     start = time.perf_counter()
-    asyncio.run(main())
+    asyncio.run(main(), debug=True)  # Debug mode gives us extra information in console
     elapsed = time.perf_counter() - start
     print(f"This took {elapsed}")
     LOG.info("Finished main loop")
