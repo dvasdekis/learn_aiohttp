@@ -1,6 +1,6 @@
 # learn_aiohttp and asyncio
 
-Best explanation I've read so far is here: https://medium.com/velotio-perspectives/an-introduction-to-asynchronous-programming-in-python-af0189a88bbb
+Best explanation I've read so far is here: https://www.roguelynn.com/words/asyncio-we-did-it-wrong/
 
 
 My take on understanding the async paradigm is:
